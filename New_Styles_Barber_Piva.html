@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>New Styles Barber - Agendamento</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #0a0a0a;
+      color: #f5f5f5;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    h1 {
+      color: #c0c0c0;
+      font-size: 2rem;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    form {
+      background: #1a1a1a;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+      width: 90%;
+      max-width: 400px;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+    input, select {
+      background-color: #2b2b2b;
+      color: #fff;
+    }
+    button {
+      background: linear-gradient(90deg, #444, #999);
+      color: #fff;
+      cursor: pointer;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    button:hover {
+      background: linear-gradient(90deg, #999, #444);
+    }
+    footer {
+      text-align: center;
+      margin-top: 20px;
+      color: #bbb;
+      font-size: 0.9rem;
+    }
+    .instagram-btn {
+      display: block;
+      margin-top: 15px;
+      text-align: center;
+      background: linear-gradient(90deg, #999, #444);
+      color: #fff;
+      text-decoration: none;
+      padding: 10px;
+      border-radius: 8px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    .instagram-btn:hover {
+      background: linear-gradient(90deg, #444, #999);
+    }
+  </style>
+  <script src="https://apis.google.com/js/api.js"></script>
+  <script>
+    const CLIENT_ID = "876782258423-8pk9j7n9pq76t44cvcrgg5hk5sprqk7e.apps.googleusercontent.com";
+    const API_KEY = "AIzaSyBc_JYz8-rAwwGutFSzM6NkrnJ5D6XsUOM";
+    const CALENDAR_ID = "primary";
+    const SCOPES = "https://www.googleapis.com/auth/calendar.events";
+
+    function handleClientLoad() {
+      gapi.load('client:auth2', initClient);
+    }
+
+    async function initClient() {
+      await gapi.client.init({
+        apiKey: API_KEY,
+        clientId: CLIENT_ID,
+        discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"],
+        scope: SCOPES,
+      });
+      await gapi.auth2.getAuthInstance().signIn();
+    }
+
+    async function createEvent(name, service, date, time) {
+      const event = {
+        summary: `${service} - ${name}`,
+        start: {
+          dateTime: `${date}T${time}:00-03:00`,
+          timeZone: "America/Sao_Paulo",
+        },
+        end: {
+          dateTime: `${date}T${time.slice(0,2)}:30:00-03:00`,
+          timeZone: "America/Sao_Paulo",
+        },
+        description: `Agendamento via site New Styles Barber - Serviço: ${service}`,
+      };
+
+      try {
+        const request = gapi.client.calendar.events.insert({
+          calendarId: CALENDAR_ID,
+          resource: event,
+        });
+        request.execute((event) => {
+          alert("✅ Agendamento confirmado e adicionado à Agenda Google!");
+        });
+      } catch (err) {
+        alert("⚠️ Erro ao criar evento: " + err.message);
+      }
+    }
+
+    function handleSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('name').value;
+      const service = document.getElementById('service').value;
+      const date = document.getElementById('date').value;
+      const time = document.getElementById('time').value;
+      createEvent(name, service, date, time);
+    }
+  </script>
+</head>
+<body onload="handleClientLoad()">
+  <h1>New Styles Barber</h1>
+  <form onsubmit="handleSubmit(event)">
+    <input type="text" id="name" placeholder="Seu nome" required />
+    <select id="service" required>
+      <option value="">Selecione o serviço</option>
+      <option value="Corte">Corte</option>
+      <option value="Corte + Barba">Corte + Barba</option>
+      <option value="Sobrancelha">Sobrancelha</option>
+    </select>
+    <input type="date" id="date" required />
+    <input type="time" id="time" required />
+    <button type="submit">Agendar horário</button>
+  </form>
+
+  <a href="https://www.instagram.com/new_styles_barbearia" target="_blank" class="instagram-btn">Voltar ao Instagram</a>
+
+  <footer>
+    📍 Av. Beija-Flor, 9611 – Conj. Floresta, Sarandi<br>
+    ✂️ Edson, João e Piva<br>
+    📞 (44) 9 9801-7148
+  </footer>
+</body>
+</html>
